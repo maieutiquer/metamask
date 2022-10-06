@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import MetaMaskOnboarding from '@metamask/onboarding'
+import { Button } from '@mui/material'
 
 const ONBOARD_TEXT = 'Click here to install MetaMask!'
 const CONNECT_TEXT = 'Connect'
@@ -55,8 +56,8 @@ export function OnboardingButton() {
         }
     }
     return (
-        <button disabled={isDisabled} onClick={onClick}>
+        <Button variant="contained" disabled={isDisabled} onClick={onClick}>
             {buttonText}
-        </button>
+        </Button>
     )
 }

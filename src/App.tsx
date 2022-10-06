@@ -1,7 +1,9 @@
+import { Container } from '@mui/material'
+
 import { Metamask, OnboardingButton } from './components'
 
 export const App = () => (
-    <div>
+    <Container>
         <h1>Crypto Wallet App</h1>
         {typeof window.ethereum === 'undefined' ? (
             <div>
@@ -16,5 +18,5 @@ export const App = () => (
                 {window.ethereum.isMetaMask && <Metamask />}
             </div>
         )}
-    </div>
+    </Container>
 )

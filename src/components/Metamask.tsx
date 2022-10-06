@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Button } from '@mui/material'
 
 export const Metamask = () => {
     const [account, setAccount] = useState(null)
@@ -14,7 +15,9 @@ export const Metamask = () => {
             <h2>Metamask wallet</h2>
             <p>networkVersion: {window.ethereum.networkVersion}</p>
             <p>selectedAddress: {window.ethereum.selectedAddress}</p>
-            <button onClick={onEnableEtheriumButtonClick}>Enable Etherium</button>
+            <Button variant="contained" onClick={onEnableEtheriumButtonClick}>
+                Enable Etherium
+            </Button>
             <p>account: {account}</p>
         </div>
     )
