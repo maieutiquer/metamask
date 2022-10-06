@@ -22,7 +22,7 @@
     "tsc:check": "tsc --noEmit",
     "tsc:fix": "tsc --noEmit",
     "test-related": "cross-env NODE_ENV=test CI=true yarn test -- --bail --findRelatedTests",
-    "prepare": "husky install"
+    "postinstall": "husky install"
   },
   "dependencies": {
     "@commitlint/cli": "17.1.2",
