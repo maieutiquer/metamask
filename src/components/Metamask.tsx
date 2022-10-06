@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@mui/material'
 
 export const Metamask = () => {
@@ -9,6 +9,18 @@ export const Metamask = () => {
 
         setAccount(accounts[0])
     }
+
+    const handleAccountsChanged = (accounts: any) => {
+        console.info(accounts)
+    }
+
+    useEffect(() => {
+        window.ethereum.on('accountsChanged', handleAccountsChanged)
+
+        return () => {
+            window.ethereum.removeListener('accountsChanged', handleAccountsChanged)
+        }
+    }, [])
 
     return (
         <div>
