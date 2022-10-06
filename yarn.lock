@@ -6638,7 +6638,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.3.0":
+"eslint@npm:8.24.0, eslint@npm:^8.3.0":
   version: 8.24.0
   resolution: "eslint@npm:8.24.0"
   dependencies:
@@ -9677,6 +9677,7 @@ __metadata:
     "@types/react": 18.0.21
     "@types/react-dom": 18.0.6
     cross-env: 7.0.3
+    eslint: 8.24.0
     eslint-config-prettier: 8.5.0
     husky: 8.0.1
     lint-staged: 13.0.3
