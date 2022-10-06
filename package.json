@@ -15,13 +15,13 @@
     "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
     "eslint:check": "eslint --ext .js,.jsx,.ts,.tsx . --report-unused-disable-directives",
     "eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-    "stylelint:check": "stylelint **/*.scss",
-    "stylelint:fix": "stylelint **/*.scss --fix",
+    "stylelint:check": "stylelint \"**/*.scss\"",
+    "stylelint:fix": "stylelint \"**/*.scss\" --fix",
     "prettier:check": "prettier . --ignore-unknown --check",
     "prettier:fix": "prettier . --ignore-unknown --write",
     "tsc:check": "tsc --noEmit",
     "tsc:fix": "tsc --noEmit",
-    "test-related": "cross-env NODE_ENV=test CI=true yarn test -- --bail --findRelatedTests",
+    "test-related": "cross-env NODE_ENV=test CI=true react-scripts test --bail --findRelatedTests",
     "postinstall": "husky install"
   },
   "dependencies": {
