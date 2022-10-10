@@ -1,14 +1,15 @@
 import { Container } from '@mui/material'
 import detectEthereumProvider from '@metamask/detect-provider'
+import { useEffect } from 'react'
 
 import { Metamask, OnboardingButton } from './components'
-import { useEffect } from 'react'
 
 export const App = () => {
     useEffect(() => {
         const detect = async () => {
             const provider = await detectEthereumProvider()
 
+            // TODO: decide what to do with that info, add error handling
             if (provider) {
                 console.info(provider)
             }
