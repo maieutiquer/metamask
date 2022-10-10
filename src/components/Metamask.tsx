@@ -28,6 +28,7 @@ export const Metamask = () => {
 
     const handleAccountsChanged = (accounts: any) => {
         // TODO: decide what to do with that info, add error handling
+        // eslint-disable-next-line no-console
         console.info(accounts)
     }
 

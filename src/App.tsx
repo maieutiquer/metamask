@@ -11,6 +11,7 @@ export const App = () => {
 
             // TODO: decide what to do with that info, add error handling
             if (provider) {
+                // eslint-disable-next-line no-console
                 console.info(provider)
             }
             // if (provider !== window.ethereum) {
