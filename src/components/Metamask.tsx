@@ -65,7 +65,6 @@ export const Metamask: FC = () => {
                     // When a Provider makes its initial connection, it emits a "network"
                     // event with a null oldNetwork along with the newNetwork. So, if the
                     // oldNetwork exists, it represents a changing network
-                    console.log(newNetwork, oldNetwork)
                     if (oldNetwork) {
                         window.location.reload()
                     }
@@ -115,6 +114,7 @@ export const Metamask: FC = () => {
                                 }),
                             }
                         } catch (error) {
+                            // eslint-disable-next-line no-console
                             console.error(error)
                         }
                     })()
