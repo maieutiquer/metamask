@@ -20,7 +20,6 @@
     "prettier:check": "prettier . --ignore-unknown --check",
     "prettier:fix": "prettier . --ignore-unknown --write",
     "tsc:check": "tsc --noEmit",
-    "tsc:fix": "tsc --noEmit",
     "test-related": "cross-env NODE_ENV=test CI=true react-scripts test --bail --findRelatedTests",
     "ganache": "ganache --wallet.seed myCustomSeed",
     "postinstall": "husky install"
