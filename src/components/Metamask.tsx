@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { FC } from 'react'
-import { Button } from '@mui/material'
+import { Alert, Button } from '@mui/material'
 import { ethers } from 'ethers'
 import type { providers } from 'ethers'
 
@@ -40,97 +40,15 @@ const getBalanceByTokenContract = async ({
     return ethers.utils.formatUnits(balanceAsBigNumber, decimals)
 }
 
-// const getTotalSupplyOfToken = async ({
-//     contractAddress,
-//     decimals,
-//     provider,
-// }: {
-//     contractAddress: string
-//     decimals: number
-//     provider: providers.Web3Provider
-// }) => {
-//     const nexoContract = new ethers.Contract(contractAddress, genericErc20Abi, provider)
-//     const nexoBalance = (await nexoContract.totalSupply()).toString()
-//     const balanceAsBigNumber = ethers.utils.parseUnits(nexoBalance, 0)
-
-//     return ethers.utils.formatUnits(balanceAsBigNumber, decimals)
-// }
-
 export const Metamask: FC = () => {
     const [selectedAddress, setSelectedAddress] = useState(null)
     const [ethBalance, setEthBalance] = useState('')
     const [nexoTokens, setNexoTokens] = useState('')
     const [allTokens, setAllTokens] = useState([])
+    const [provider, setProvider] = useState<providers.Web3Provider>()
 
     const onConnectButtonClick = useCallback(async () => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const account =
-            process.env.REACT_APP_IMPERSONATION_ADDRESS ?? (await provider.send('eth_requestAccounts', []))[0]
-        setSelectedAddress(account)
-
-        const accountBalance = await provider.getBalance(account)
-        const balanceInEther = ethers.utils.formatEther(accountBalance)
-        setEthBalance(balanceInEther)
-
-        setNexoTokens(
-            await getBalanceByTokenContract({
-                contractAddress: NEXO_CONTRACT_ADDRESS,
-                decimals: 18,
-                provider,
-                account,
-            })
-        )
-
-        const allTokenDescriptions = await fetch(
-            'https://gateway.ipfs.io/ipfs/QmdvdRrtqxbBKmCpxFyraXEvHPGKkenkZKWGBD4KkLwXCw'
-        )
-        // nexo: 1791
-        const allTokenDescriptionsJson: tokenDescription[] = await allTokenDescriptions.json()
-
-        const tokensToCheck = allTokenDescriptionsJson.map(({ address, decimals, name, symbol }) =>
-            (async () => {
-                try {
-                    return {
-                        name,
-                        symbol,
-                        decimals,
-                        address,
-                        balance: await getBalanceByTokenContract({
-                            contractAddress: address,
-                            decimals,
-                            provider,
-                            account,
-                        }),
-                        totalSupply: await getBalanceByTokenContract({
-                            contractAddress: address,
-                            decimals,
-                            provider,
-                        }),
-                    }
-                } catch (error) {
-                    console.error(error)
-                }
-            })()
-        )
-
-        const allTokensChecked = await Promise.allSettled(tokensToCheck)
-
-        // TODO: check ts error: Type 'any' is not assignable to type 'never'.
-        setAllTokens(
-            // @ts-ignore
-            allTokensChecked
-                // .filter(
-                //     ({ status, value: { balance: retrievedBalance } = {} }) =>
-                //         status === 'fulfilled' && retrievedBalance !== '0.0'
-                // )
-
-                .filter((x): x is PromiseFulfilledResult<tokenWithDetails> => x.status === 'fulfilled')
-                .map(({ value }) => value)
-                .filter(Boolean)
-                .filter(({ balance: retrievedBalance }) => retrievedBalance !== '0.0' && retrievedBalance !== '0')
-        )
-
-        // setAllContracts(allContractAddressesJson)
+        setProvider(new ethers.providers.Web3Provider(window.ethereum ?? {}, 'any'))
     }, [])
 
     const handleAccountsChanged = (accounts: any) => {
@@ -140,6 +58,88 @@ export const Metamask: FC = () => {
     }
 
     useEffect(() => {
+        if (typeof provider !== 'undefined') {
+            const onConnected = async () => {
+                // https://docs.ethers.io/v5/single-page/#/v5/concepts/best-practices/-%23-best-practices--network-changes
+                provider.on('network', (newNetwork, oldNetwork) => {
+                    // When a Provider makes its initial connection, it emits a "network"
+                    // event with a null oldNetwork along with the newNetwork. So, if the
+                    // oldNetwork exists, it represents a changing network
+                    console.log(newNetwork, oldNetwork)
+                    if (oldNetwork) {
+                        window.location.reload()
+                    }
+                })
+
+                const account =
+                    process.env.REACT_APP_IMPERSONATION_ADDRESS ?? (await provider.send('eth_requestAccounts', []))[0]
+                setSelectedAddress(account)
+
+                const accountBalance = await provider.getBalance(account)
+                const balanceInEther = ethers.utils.formatEther(accountBalance)
+                setEthBalance(balanceInEther)
+
+                setNexoTokens(
+                    await getBalanceByTokenContract({
+                        contractAddress: NEXO_CONTRACT_ADDRESS,
+                        decimals: 18,
+                        provider,
+                        account,
+                    })
+                )
+
+                const allTokenDescriptions = await fetch(
+                    'https://gateway.ipfs.io/ipfs/QmdvdRrtqxbBKmCpxFyraXEvHPGKkenkZKWGBD4KkLwXCw'
+                )
+                // nexo: 1791
+                const allTokenDescriptionsJson: tokenDescription[] = await allTokenDescriptions.json()
+
+                const tokensToCheck = allTokenDescriptionsJson.map(({ address, decimals, name, symbol }) =>
+                    (async () => {
+                        try {
+                            return {
+                                name,
+                                symbol,
+                                decimals,
+                                address,
+                                balance: await getBalanceByTokenContract({
+                                    contractAddress: address,
+                                    decimals,
+                                    provider,
+                                    account,
+                                }),
+                                totalSupply: await getBalanceByTokenContract({
+                                    contractAddress: address,
+                                    decimals,
+                                    provider,
+                                }),
+                            }
+                        } catch (error) {
+                            console.error(error)
+                        }
+                    })()
+                )
+
+                const allTokensChecked = await Promise.allSettled(tokensToCheck)
+
+                // TODO: check ts error: Type 'any' is not assignable to type 'never'.
+                setAllTokens(
+                    // @ts-ignore
+                    allTokensChecked
+                        .filter((x): x is PromiseFulfilledResult<tokenWithDetails> => x.status === 'fulfilled')
+                        .map(({ value }) => value)
+                        .filter(Boolean)
+                        .filter(
+                            ({ balance: retrievedBalance }) => retrievedBalance !== '0.0' && retrievedBalance !== '0'
+                        )
+                )
+            }
+
+            onConnected()
+        }
+    }, [provider])
+
+    useEffect(() => {
         window.ethereum.on('accountsChanged', handleAccountsChanged)
 
         return () => {
@@ -147,15 +147,15 @@ export const Metamask: FC = () => {
         }
     }, [])
 
-    console.log(allTokens)
-
     return (
         <div>
             <h2>Metamask wallet</h2>
             <p>
                 Network Version: <strong>{window.ethereum.networkVersion}</strong>
             </p>
-            {/* <p>Selected Address: {window.ethereum.selectedAddress}</p> */}
+            {window.ethereum.networkVersion !== '1' && (
+                <Alert severity="warning">The currently selected network is not "Mainnet"!</Alert>
+            )}
             {selectedAddress === null ? (
                 <Button variant="contained" onClick={onConnectButtonClick}>
                     Connect to Metamask
@@ -178,6 +178,7 @@ export const Metamask: FC = () => {
                     <p>
                         All tokens that you have:{' '}
                         {allTokens.map(({ name, balance, symbol, decimals, totalSupply }) => (
+                            // TODO: use mui accordion
                             <details>
                                 <summary>
                                     {name}: {balance}
