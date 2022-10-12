@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { FC } from 'react'
-import { Alert, Button } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Alert, Button, Typography } from '@mui/material'
 import { ethers } from 'ethers'
 import type { providers } from 'ethers'
 
 import genericErc20Abi from '../erc20.json'
+import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material'
 
 const NEXO_CONTRACT_ADDRESS = '0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206'
 
@@ -179,27 +180,35 @@ export const Metamask: FC = () => {
                         All tokens that you have:{' '}
                         {allTokens.map(({ name, balance, symbol, decimals, totalSupply }) => (
                             // TODO: use mui accordion
-                            <details>
-                                <summary>
-                                    {name}: {balance}
-                                </summary>
-                                <p>
-                                    <dl>
-                                        <dt>
-                                            <strong>Symbol:</strong>
-                                        </dt>
-                                        <dd>{symbol}</dd>
-                                        <dt>
-                                            <strong>Decimals:</strong>
-                                        </dt>
-                                        <dd>{decimals}</dd>
-                                        <dt>
-                                            <strong>Total Supply:</strong>
-                                        </dt>
-                                        <dd>{totalSupply}</dd>
-                                    </dl>
-                                </p>
-                            </details>
+                            <Accordion key={symbol}>
+                                <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel1a-content"
+                                    id="panel1a-header"
+                                >
+                                    <Typography>
+                                        {name}: {balance}
+                                    </Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <Typography>
+                                        <dl>
+                                            <dt>
+                                                <strong>Symbol:</strong>
+                                            </dt>
+                                            <dd>{symbol}</dd>
+                                            <dt>
+                                                <strong>Decimals:</strong>
+                                            </dt>
+                                            <dd>{decimals}</dd>
+                                            <dt>
+                                                <strong>Total Supply:</strong>
+                                            </dt>
+                                            <dd>{totalSupply}</dd>
+                                        </dl>
+                                    </Typography>
+                                </AccordionDetails>
+                            </Accordion>
                         ))}
                     </p>
                 </div>
